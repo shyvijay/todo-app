@@ -1,24 +1,51 @@
-import logo from './logo.svg';
-import './App.css';
+import { useState } from "react";
+import { nanoid } from "nanoid";
+import "./App.css";
+import CssBaseline from "@mui/material/CssBaseline";
+
+import { Container } from "@mui/material";
+import data from "./api/data.json";
+import Header from "./components/Header";
+import TodoList from "./components/TodoList";
+import TodoForm from "./components/TodoForm";
 
 function App() {
+  const [todoList, setTodoList] = useState(data);
+
+  const handleToggle = (id) => {
+    let mapped = todoList.map((task) => {
+      return task.id === id
+        ? { ...task, complete: !task.complete }
+        : { ...task };
+    });
+    setTodoList(mapped);
+  };
+
+  const handleFilter = (id) => {
+    let filtered = todoList.filter((task) => {
+      return !task.complete;
+    });
+    setTodoList(filtered);
+  };
+
+  const addTask = (userInput) => {
+    let copy = [...todoList];
+    copy = [...copy, { id: nanoid(), task: userInput, complete: false }];
+    setTodoList(copy);
+  };
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <>
+      <CssBaseline />
+      <Container fixed>
+        <Header />
+        <TodoForm addTask={addTask} />
+        <TodoList
+          todoList={todoList}
+          handleToggle={handleToggle}
+          handleFilter={handleFilter}
+        />
+      </Container>
+    </>
   );
 }
 
